@@ -1,129 +1,119 @@
-import React, { useState, useEffect } from 'react';
-import { Star, Heart, MapPin, Search, Filter, Bed, Bath, Ruler } from 'lucide-react';
+import React from 'react';
+import { Star, ShoppingCart, Heart } from 'lucide-react';
 
-const HouseListing = () => {
-  // Changed from products to houses
-  const houses = [
-    {
-      "id": "h1",
-      "address": "123 Oak Street",
-      "price": 349999,
-      "type": "Single Family",
-      "bedrooms": 3,
-      "bathrooms": 2,
-      "sqft": 1850,
-      "listed": true,
-      "rating": 4.7,
-      "image": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6",
-      "location": "Ajah"
-    },
-    {
-      "id": "h2",
-      "address": "456 Maple Avenue",
-      "price": 499999,
-      "type": "Townhouse",
-      "bedrooms": 4,
-      "bathrooms": 2.5,
-      "sqft": 2200,
-      "listed": true,
-      "rating": 4.5,
-      "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
-      "location": "Sangotedo"
-    },
-    {
-      "id": "h3",
-      "address": "789 Pine Road",
-      "price": 279999,
-      "type": "Condo",
-      "bedrooms": 2,
-      "bathrooms": 1,
-      "sqft": 1200,
-      "listed": false,
-      "rating": 4.2,
-      "image": "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6",
-      "location": "Badore"
-    },
-    {
-      "id": "h4",
-      "address": "101 Birch Lane",
-      "price": 589999,
-      "type": "Single Family",
-      "bedrooms": 5,
-      "bathrooms": 3,
-      "sqft": 3200,
-      "listed": true,
-      "rating": 4.9,
-      "image": "https://images.unsplash.com/photo-1605146769289-440113cc3d00",
-      "location": "mainland"
-    },
-    {
-      "id": "h5",
-      "address": "202 Cedar Court",
-      "price": 419999,
-      "type": "Duplex",
-      "bedrooms": 3,
-      "bathrooms": 2,
-      "sqft": 2100,
-      "listed": true,
-      "rating": 2.3,
-      "image": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d",
-      "location": "Lekki"
-    }
-    
-  ];
+// Sample product list
+const products = [
+  {
+    id: "p1",
+    name: "Wireless Bluetooth Earbuds",
+    price: 79.99,
+    category: "Electronics",
+    inStock: true,
+    rating: 4.5,
+    image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df"
+  },
+  {
+    id: "p2",
+    name: "Stainless Steel Water Bottle",
+    price: 24.95,
+    category: "Home",
+    inStock: true,
+    rating: 4.8,
+    image: "https://images.unsplash.com/photo-1602143407151-7111542de6e8"
+  },
+  {
+    id: "p3",
+    name: "Organic Cotton T-Shirt",
+    price: 29.99,
+    category: "Clothing",
+    inStock: false,
+    rating: 4.2,
+    image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab"
+  },
+  {
+    id: "p4",
+    name: "Smart LED TV 55-inch",
+    price: 599.99,
+    category: "Electronics",
+    inStock: true,
+    rating: 4.7,
+    image: "https://images.unsplash.com/photo-1593784991095-a205069470b6"
+  },
+  {
+    id: "p5",
+    name: "Yoga Mat",
+    price: 34.50,
+    category: "Fitness",
+    inStock: true,
+    rating: 4.3,
+    image: "https://images.unsplash.com/photo-1545389336-cf090694435e"
+  },
+  {
+    id: "p6",
+    name: "Electric Toothbrush",
+    price: 49.99,
+    category: "Health",
+    inStock: false,
+    rating: 4.6,
+    image: "https://images.unsplash.com/photo-1625772452859-1c03d5bf1137"
+  },
+  {
+    id: "p7",
+    name: "Hardcover Notebook",
+    price: 12.99,
+    category: "Office",
+    inStock: true,
+    rating: 4.4,
+    image: "https://images.unsplash.com/photo-1544947950-fa07a98d237f"
+  },
+  {
+    id: "p8",
+    name: "Portable Bluetooth Speaker",
+    price: 89.99,
+    category: "Electronics",
+    inStock: true,
+    rating: 4.1,
+    image: "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb"
+  },
+  {
+    id: "p9",
+    name: "Non-Stick Cooking Pan Set",
+    price: 129.99,
+    category: "Kitchen",
+    inStock: true,
+    rating: 4.9,
+    image: "https://images.unsplash.com/photo-1583778176476-4a8b02b64b1b"
+  },
+  {
+    id: "p10",
+    name: "Fitness Tracker Watch",
+    price: 59.95,
+    category: "Fitness",
+    inStock: false,
+    rating: 4.0,
+    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30"
+  }
+];
 
-  const [filteredHouses, setFilteredHouses] = useState(houses);
-  const [selectedType, setSelectedType] = useState('All');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showListedOnly, setShowListedOnly] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState('All');
-
-  // Get unique property types and locations
-  const propertyTypes = ['All', ...new Set(houses.map(house => house.type))];
-  const locations = ['All', ...new Set(houses.map(house => house.location))];
-
-  // Filter houses based on search, type, location, and listing status
-  useEffect(() => {
-    let filtered = houses;
-
-    // Filter by search term (address)
-    if (searchTerm) {
-      filtered = filtered.filter(house =>
-        house.address.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Filter by property type
-    if (selectedType !== 'All') {
-      filtered = filtered.filter(house => house.type === selectedType);
-    }
-
-    // Filter by location
-    if (selectedLocation !== 'All') {
-      filtered = filtered.filter(house => house.location === selectedLocation);
-    }
-
-    // Filter by listing status
-    if (showListedOnly) {
-      filtered = filtered.filter(house => house.listed);
-    }
-
-    setFilteredHouses(filtered);
-  }, [searchTerm, selectedType, showListedOnly, selectedLocation, houses]);
-
+// Card component for displaying product info
+const Card = ({ name, img, rate, price, inStock, category }) => {
+  // Function to render star ratings based on value
   const renderStars = (rating) => {
     const stars = [];
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 !== 0;
 
+    // Full stars
     for (let i = 0; i < fullStars; i++) {
       stars.push(<Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />);
     }
 
+    // Half star
     if (hasHalfStar) {
-      stars.push(<Star key="half" className="w-4 h-4 fill-yellow-400 text-yellow-400 opacity-50" />);
+      stars.push(<Star key="half" className="w-4 h-4 fill-yellow-400/50 text-yellow-400" />);
     }
 
+    // Remaining empty stars
     const emptyStars = 5 - Math.ceil(rating);
     for (let i = 0; i < emptyStars; i++) {
       stars.push(<Star key={`empty-${i}`} className="w-4 h-4 text-gray-300" />);
@@ -132,183 +122,103 @@ const HouseListing = () => {
     return stars;
   };
 
-  // Format price as currency
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-NG', {
-      style: 'currency',
-      currency: 'NGN',
-      maximumFractionDigits: 0
-    }).format(price);
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Real Estate Listings</h1>
-          <p className="text-gray-600">Find your dream home from our curated collection</p>
+    <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden group flex flex-col h-full">
+      {/* Product Image */}
+      <div className="relative overflow-hidden">
+        <img
+          src={img}
+          alt={name}
+          className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+        />
+
+        {/* In-stock or out-of-stock badge */}
+        <div className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-semibold ${
+          inStock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+        }`}>
+          {inStock ? 'In Stock' : 'Out of Stock'}
         </div>
 
-        {/* Filters */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-          <div className="flex flex-wrap gap-4 items-center">
-            {/* Search */}
-            <div className="relative flex-1 min-w-64">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search by address..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
+        {/* Product Category */}
+        <div className="absolute top-3 right-3 bg-black/70 text-white px-2 py-1 rounded-lg text-xs">
+          {category}
+        </div>
 
-            {/* Property Type Filter */}
-            <div className="flex items-center gap-2">
-              <Filter className="w-5 h-5 text-gray-400" />
-              <select
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                value={selectedType}
-                onChange={(e) => setSelectedType(e.target.value)}
-              >
-                {propertyTypes.map(type => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </select>
-            </div>
+        {/* Wishlist icon */}
+        <button className="absolute bottom-3 right-3 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <Heart className="w-4 h-4 text-gray-600 hover:text-red-500 transition-colors" />
+        </button>
+      </div>
 
-            {/* Location Filter */}
-            <div className="flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-gray-400" />
-              <select
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                value={selectedLocation}
-                onChange={(e) => setSelectedLocation(e.target.value)}
-              >
-                {locations.map(location => (
-                  <option key={location} value={location}>{location}</option>
-                ))}
-              </select>
-            </div>
+      {/* Product Content */}
+      <div className="p-4 flex flex-col flex-grow">
+        {/* Product Name */}
+        <h3 className="font-semibold text-gray-800 text-lg mb-2 line-clamp-2 h-14 flex items-start">
+          {name}
+        </h3>
 
-            {/* Listed Only Filter */}
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={showListedOnly}
-                onChange={(e) => setShowListedOnly(e.target.checked)}
-                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <span className="text-gray-700">Available Only</span>
-            </label>
+        {/* Star Rating */}
+        <div className="flex items-center gap-1 mb-3">
+          <div className="flex gap-0.5">
+            {renderStars(rate)}
           </div>
+          <span className="text-sm text-gray-600 ml-1">({rate})</span>
         </div>
 
-        {/* Results Count */}
-        <div className="mb-6">
-          <p className="text-gray-600">
-            Showing {filteredHouses.length} of {houses.length} properties
-          </p>
+        {/* Product Price */}
+        <div className="flex items-center justify-between mb-4">
+          <span className="text-2xl font-bold text-gray-900">
+            ${price}
+          </span>
         </div>
 
-        {/* Houses Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredHouses.map(house => (
-            <div key={house.id} className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden">
-              {/* House Image */}
-              <div className="relative">
-                <img
-                  src={house.image}
-                  alt={house.address}
-                  className="w-full h-64 object-cover"
-                />
-                {!house.listed && (
-                  <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                    Under Contract
-                  </div>
-                )}
-                {house.listed && (
-                  <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                    Available
-                  </div>
-                )}
-                <button className="absolute top-2 left-2 bg-white p-2 rounded-full shadow-md hover:bg-gray-100">
-                  <Heart className="w-5 h-5 text-red-500" />
-                </button>
-              </div>
-
-              {/* House Info */}
-              <div className="p-4">
-                <div className="flex items-start justify-between mb-2">
-                  <span className="text-xs font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
-                    {house.type}
-                  </span>
-                  <div className="flex items-center gap-1">
-                    {renderStars(house.rating)}
-                  </div>
-                </div>
-
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {house.address}
-                </h3>
-
-                <div className="flex items-center gap-2 text-gray-600 mb-4">
-                  <MapPin className="w-4 h-4" />
-                  <span className="text-sm">{house.location}</span>
-                </div>
-
-                {/* House Features */}
-                <div className="flex gap-4 mb-4">
-                  <div className="flex items-center gap-1">
-                    <Bed className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm">{house.bedrooms} beds</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Bath className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm">{house.bathrooms} baths</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Ruler className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm">{house.sqft.toLocaleString()} sqft</span>
-                  </div>
-                </div>
-
-                {/* Price and Contact */}
-                <div className="flex items-center justify-between border-t pt-4">
-                  <span className="text-2xl font-bold text-gray-900">
-                    {formatPrice(house.price)}
-                  </span>
-                  <button
-                    disabled={!house.listed}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                      house.listed
-                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    }`}
-                  >
-                    Contact Agent
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
+        {/* Add to Cart Button */}
+        <div className="mt-auto">
+          <button
+            disabled={!inStock}
+            className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
+              inStock
+                ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            <ShoppingCart className="w-4 h-4" />
+            {inStock ? 'Add to Cart' : 'Out of Stock'}
+          </button>
         </div>
-
-        {/* No Results */}
-        {filteredHouses.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
-              <Search className="w-16 h-16 mx-auto" />
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No properties found</h3>
-            <p className="text-gray-600">Try adjusting your search or filter criteria</p>
-          </div>
-        )}
       </div>
     </div>
   );
 };
 
-export default HouseListing;
+// Main product component
+const Productfrancis = () => {
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="container mx-auto px-4">
+        {/* Page Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Our Products</h1>
+          <p className="text-gray-600">Discover amazing products at great prices</p>
+        </div>
+
+        {/* Product Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {products.map((product) => (
+            <Card
+              key={product.id}
+              name={product.name}
+              img={product.image}
+              rate={product.rating}
+              price={product.price}
+              inStock={product.inStock}
+              category={product.category}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Productfrancis;
